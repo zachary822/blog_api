@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from health.schemas import Health, Status
+
+from api.health.schemas import Health, Status
 
 router = APIRouter(tags=["health"])
 

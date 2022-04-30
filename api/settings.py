@@ -1,7 +1,8 @@
+from typing import Optional
+
 from pydantic import BaseSettings
 
-from schemas import MongoDsn
-from typing import Optional
+from api.schemas import MongoDsn
 
 
 class Settings(BaseSettings):

@@ -3,9 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, Path
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from dependencies import get_client, CommonQueryParams
-from schemas import Post, ObjectId, Month
-from posts import crud
+from api.dependencies import CommonQueryParams, get_client
+from api.posts import crud
+from api.schemas import Month, ObjectId, Post
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
@@ -41,11 +41,14 @@ async def read_posts(
 
 
 @router.get("/{year}/{month}/", response_model=list[Post])
-async def read_month_posts(year: int = Path(...), month: int = Path(..., le=12, ge=1), client: AsyncIOMotorClient = Depends(get_client)):
+async def read_month_posts(
+    year: int = Path(...),
+    month: int = Path(..., le=12, ge=1),
+    client: AsyncIOMotorClient = Depends(get_client),
+):
     posts = []
 
     async for post in crud.get_month_posts(client, year, month):
         posts.append(post)
 
     return posts
-

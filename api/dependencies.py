@@ -5,7 +5,7 @@ from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, conint
 
-from settings import Settings
+from api.settings import Settings
 
 
 @cache

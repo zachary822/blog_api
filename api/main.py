@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-import health
-import posts
-from settings import Settings
+from api import health, posts
+from api.settings import Settings
 
 settings = Settings()
 
