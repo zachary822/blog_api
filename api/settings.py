@@ -6,9 +6,9 @@ from api.types import MongoDsn
 
 
 class Settings(BaseSettings):
-    MONGODB_URI: MongoDsn
-    ALLOW_ORIGINS: Optional[list[str]] = ["*"]
-    ALLOW_METHODS: Optional[list[str]] = ["*"]
+    MONGODB_URI: Optional[MongoDsn]
+    ALLOW_ORIGINS: list[str] = ["*"]
+    ALLOW_METHODS: list[str] = ["*"]
 
     class Config:
         env_file = ".env"
