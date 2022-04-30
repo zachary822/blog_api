@@ -8,13 +8,16 @@ on:
       - main
 
 jobs:
-  build:
+  pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.x'
+          python-version: '3.9'
+          cache: 'pipenv'
+          cache-dependency-path: |
+            api/Pipfile.lock
       - name: install dependencies
         run: |
           python -m pip install pipenv
