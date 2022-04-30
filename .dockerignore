@@ -139,3 +139,4 @@ dmypy.json
 cython_debug/
 
 mypy.ini
+.pre-commit-config.yaml
