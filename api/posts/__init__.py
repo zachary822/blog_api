@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, HTTPException, Path
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.dependencies import CommonQueryParams, get_client
@@ -37,7 +37,12 @@ async def get_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
 async def read_posts(
     object_id: ObjectId, client: AsyncIOMotorClient = Depends(get_client)
 ):
-    return await crud.read_post(client, object_id)
+    post = await crud.read_post(client, object_id)
+
+    if not post:
+        raise HTTPException(404, "post not found")
+
+    return post
 
 
 @router.get("/{year}/{month}/", response_model=list[Post])
