@@ -1,0 +1,22 @@
+name: pytest
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+      - run: |
+          python -m pip install pipenv
+          pipenv install --dev --system --deploy
+      - name: pytest
+        run: pytest
