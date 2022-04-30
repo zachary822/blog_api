@@ -1,16 +1,17 @@
-from typing import List
+import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.dependencies import CommonQueryParams, get_client
 from api.posts import crud
-from api.schemas import Month, ObjectId, Post
+from api.schemas import MonthSummary, Post
+from api.types import ObjectId
 
-router = APIRouter(prefix="/posts", tags=["posts"])
+router = APIRouter(tags=["posts"])
 
 
-@router.get("/", response_model=List[Post], response_model_by_alias=True)
+@router.get("/", response_model=list[Post], response_model_by_alias=True)
 async def read_posts(
     client: AsyncIOMotorClient = Depends(get_client),
     commons: CommonQueryParams = Depends(),
@@ -23,7 +24,7 @@ async def read_posts(
     return posts
 
 
-@router.get("/summary/", response_model=list[Month])
+@router.get("/summary/", response_model=list[MonthSummary])
 async def get_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
     posts = []
 
@@ -45,12 +46,15 @@ async def read_posts(
     return post
 
 
-@router.get("/{year}/{month}/", response_model=list[Post])
+@router.get("/{year}/{month}/", response_model=list[Post], response_model_by_alias=True)
 async def read_month_posts(
-    year: int = Path(...),
+    year: int = Path(..., ge=datetime.MINYEAR, le=datetime.MAXYEAR),
     month: int = Path(..., le=12, ge=1),
     client: AsyncIOMotorClient = Depends(get_client),
 ):
+    """
+    Get posts for each month
+    """
     posts = []
 
     async for post in crud.get_month_posts(client, year, month):

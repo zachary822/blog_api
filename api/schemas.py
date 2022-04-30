@@ -1,30 +1,8 @@
 from datetime import datetime
 
-from bson.objectid import ObjectId as _ObjectId
-from pydantic import AnyUrl, BaseModel, Field, root_validator
+from pydantic import BaseModel, Field, root_validator
 
-
-class MongoDsn(AnyUrl):
-    allowed_schemes = {"mongodb", "mongodb+srv"}
-
-
-class ObjectId(_ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        return cls(v)
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(
-            title="_id",
-            type="string",
-            format="ObjectId",
-            example="626b65bb8e5b53965f7c8ae6",
-        )
+from api.types import ObjectId
 
 
 class Document(BaseModel):
@@ -40,7 +18,7 @@ class Post(Document):
     body: str
 
 
-class Month(BaseModel):
+class MonthSummary(BaseModel):
     year: int
     month: int
     count: int

@@ -3,7 +3,7 @@ from typing import Optional
 from bson.son import SON
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from api.schemas import ObjectId
+from api.types import ObjectId
 
 
 def read_posts(

@@ -6,7 +6,7 @@ from api.settings import Settings
 
 settings = Settings()
 
-app = FastAPI()
+app = FastAPI(title="ThoughtBank Blog API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,5 +14,10 @@ app.add_middleware(
     allow_headers=settings.ALLOW_METHODS,
 )
 
-app.include_router(posts.router)
-app.include_router(health.router)
+app.include_router(posts.router, prefix="/posts")
+app.include_router(health.router, prefix="/health")
+
+
+@app.get("/")
+def hello_world():
+    return "Hello World!"

@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseSettings
 
-from api.schemas import MongoDsn
+from api.types import MongoDsn
 
 
 class Settings(BaseSettings):
