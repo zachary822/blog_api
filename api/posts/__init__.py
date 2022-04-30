@@ -1,6 +1,6 @@
 import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, status
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.dependencies import CommonQueryParams, get_client
@@ -41,7 +41,7 @@ async def read_posts(
     post = await crud.read_post(client, object_id)
 
     if not post:
-        raise HTTPException(404, "post not found")
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")
 
     return post
 

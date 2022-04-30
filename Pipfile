@@ -11,6 +11,9 @@ motor = {extras = ["srv"], version = "*"}
 
 [dev-packages]
 mypy = "*"
+pytest = "*"
+pytest-asyncio = "*"
+requests = "*"
 
 [requires]
 python_version = "3.9"

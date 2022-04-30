@@ -9,11 +9,17 @@ from api.types import ObjectId
 def read_posts(
     client: AsyncIOMotorClient, limit: Optional[int] = 10, offset: Optional[int] = 0
 ):
-    return (
-        client.blog.posts.find({"published": True})
-        .sort("created", -1)
-        .limit(limit)
-        .skip(offset)
+    return client.blog.posts.aggregate(
+        [
+            {
+                "$match": {
+                    "published": True,
+                },
+            },
+            {"$sort": {"created": -1}},
+            {"$skip": offset},
+            {"$limit": limit},
+        ]
     )
 
 
