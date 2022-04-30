@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from api.types import ObjectId
 
 
-def read_posts(
+def get_posts(
     client: AsyncIOMotorClient, limit: Optional[int] = 10, offset: Optional[int] = 0
 ):
     return client.blog.posts.aggregate(
@@ -23,7 +23,7 @@ def read_posts(
     )
 
 
-def read_post(client: AsyncIOMotorClient, object_id: ObjectId):
+def get_post(client: AsyncIOMotorClient, object_id: ObjectId):
     return client.blog.posts.find_one({"_id": object_id, "published": True})
 
 

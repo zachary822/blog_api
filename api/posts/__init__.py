@@ -18,14 +18,14 @@ async def read_posts(
 ):
     posts = []
 
-    async for post in crud.read_posts(client, **commons.dict()):
+    async for post in crud.get_posts(client, **commons.dict()):
         posts.append(post)
 
     return posts
 
 
 @router.get("/summary/", response_model=list[MonthSummary])
-async def get_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
+async def read_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
     posts = []
 
     async for post in crud.get_summary(client):
@@ -38,7 +38,7 @@ async def get_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
 async def read_posts(
     object_id: ObjectId, client: AsyncIOMotorClient = Depends(get_client)
 ):
-    post = await crud.read_post(client, object_id)
+    post = await crud.get_post(client, object_id)
 
     if not post:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")
