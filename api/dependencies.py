@@ -1,7 +1,7 @@
 from functools import cache
 from typing import AsyncIterator, Optional
 
-from fastapi import Depends
+from fastapi import Depends, Response
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, conint
 
@@ -22,3 +22,11 @@ async def get_client(
 class CommonQueryParams(BaseModel):
     limit: Optional[conint(le=100, ge=0)] = 10  # type: ignore[valid-type]
     offset: Optional[conint(ge=0)] = 0  # type: ignore[valid-type]
+
+
+class CacheControl:
+    def __init__(self, directives: str):
+        self.directives = directives
+
+    async def __call__(self, response: Response) -> None:
+        response.headers["Cache-Control"] = self.directives
