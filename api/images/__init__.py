@@ -4,6 +4,7 @@ from gridfs.errors import NoFile
 from motor.motor_asyncio import AsyncIOMotorGridFSBucket
 
 from api.dependencies import get_fs
+from api.images import crud
 from api.types import ObjectId
 
 router = APIRouter(tags=["images"])
@@ -14,9 +15,9 @@ async def get_image(
     object_id: ObjectId, fs: AsyncIOMotorGridFSBucket = Depends(get_fs)
 ):
     try:
-        grid_out = await fs.open_download_stream(object_id)
+        grid_out = await crud.get_image(fs, object_id)
 
-        async def read():
+        async def file_iter():
             while True:
                 content = await grid_out.read(1024)
                 if not content:
@@ -24,7 +25,7 @@ async def get_image(
                 yield content
 
         return StreamingResponse(
-            read(),
+            file_iter(),
             media_type=grid_out.content_type,
             headers={"Content-Length": str(grid_out.length)},
         )
