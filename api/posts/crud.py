@@ -1,6 +1,5 @@
 from typing import Optional
 
-from bson.son import SON
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.types import ObjectId
@@ -42,7 +41,8 @@ SUMMARY_PIPELINE = [
             "count": {"$sum": 1},
         },
     },
-    {"$sort": SON([("_id.year", -1), ("_id.month", -1)])},
+    {"$addFields": {"year": "$_id.year", "month": "$_id.month"}},
+    {"$sort": {"_id.year": -1, "_id.month": -1}},
 ]
 
 
