@@ -23,13 +23,12 @@ async def get_image(
                     break
                 yield content
 
+        return StreamingResponse(
+            read(),
+            media_type=grid_out.content_type,
+            headers={"Content-Length": str(grid_out.length)},
+        )
     except NoFile as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="image not found"
         ) from e
-
-    return StreamingResponse(
-        read(),
-        media_type=grid_out.content_type,
-        headers={"Content-Length": str(grid_out.length)},
-    )
