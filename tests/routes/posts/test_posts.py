@@ -49,7 +49,7 @@ class TestPosts:
     def test_read_month_posts(self, client, mongodb_client, post):
         posts = [post]
 
-        mongodb_client.blog.posts.find.return_value.__aiter__.return_value = posts
+        mongodb_client.blog.posts.aggregate.return_value.__aiter__.return_value = posts
 
         response = client.get("/posts/2022/4/")
         assert response.status_code == 200

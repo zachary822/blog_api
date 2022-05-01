@@ -51,14 +51,19 @@ def get_summary(client: AsyncIOMotorClient):
 
 
 def get_month_posts(client: AsyncIOMotorClient, year: int, month: int):
-    return client.blog.posts.find(
-        {
-            "$expr": {
-                "$and": [
-                    {"$eq": [{"$year": "$created"}, year]},
-                    {"$eq": [{"$month": "$created"}, month]},
-                    {"$eq": ["$published", True]},
-                ],
+    return client.blog.posts.aggregate(
+        [
+            {
+                "$match": {
+                    "$expr": {
+                        "$and": [
+                            {"$eq": ({"$year": "$created"}, year)},
+                            {"$eq": ({"$month": "$created"}, month)},
+                            {"$eq": ("$published", True)},
+                        ],
+                    },
+                }
             },
-        }
+            {"$sort": {"created": -1}},
+        ]
     )
