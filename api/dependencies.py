@@ -2,7 +2,7 @@ from functools import cache
 from typing import AsyncIterator, Optional
 
 from fastapi import Depends, Response
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 from pydantic import BaseModel, conint
 
 from api.settings import Settings
@@ -17,6 +17,10 @@ async def get_client(
     settings: Settings = Depends(get_settings),
 ) -> AsyncIterator[AsyncIOMotorClient]:
     yield AsyncIOMotorClient(settings.MONGODB_URI)
+
+
+async def get_fs(client: AsyncIOMotorClient = Depends(get_client)):
+    yield AsyncIOMotorGridFSBucket(client.blog)
 
 
 class CommonQueryParams(BaseModel):

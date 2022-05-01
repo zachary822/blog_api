@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import health, posts
+from api import health, images, posts
 from api.settings import Settings
 
 settings = Settings()
@@ -15,6 +15,7 @@ app.add_middleware(
 )
 
 app.include_router(posts.router, prefix="/posts")
+app.include_router(images.router, prefix="/images")
 app.include_router(health.router, prefix="/health")
 
 
