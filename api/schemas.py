@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, Field, root_validator
 
@@ -24,7 +25,7 @@ class MonthSummary(BaseModel):
     count: int
 
     @root_validator(pre=True)
-    def reformat_values(cls, values):
+    def reformat_values(cls, values: dict[str, Any]) -> dict[str, Any]:
         if "_id" in values:
             return {**values["_id"], **values}
         return values

@@ -35,7 +35,7 @@ async def read_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
 
 
 @router.get("/{object_id}/", response_model=Post, response_model_by_alias=True)
-async def read_posts(
+async def read_post(
     object_id: ObjectId, client: AsyncIOMotorClient = Depends(get_client)
 ):
     post = await crud.get_post(client, object_id)
