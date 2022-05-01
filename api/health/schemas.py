@@ -10,3 +10,4 @@ class Status(str, Enum):
 
 class Health(BaseModel):
     status: Status
+    mongo_version: str

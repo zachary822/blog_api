@@ -16,22 +16,12 @@ async def read_posts(
     client: AsyncIOMotorClient = Depends(get_client),
     commons: CommonQueryParams = Depends(),
 ):
-    posts = []
-
-    async for post in crud.get_posts(client, **commons.dict()):
-        posts.append(post)
-
-    return posts
+    return [post async for post in crud.get_posts(client, **commons.dict())]
 
 
 @router.get("/summary/", response_model=list[MonthSummary])
 async def read_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
-    posts = []
-
-    async for post in crud.get_summary(client):
-        posts.append(post)
-
-    return posts
+    return [post async for post in crud.get_summary(client)]
 
 
 @router.get("/{object_id}/", response_model=Post, response_model_by_alias=True)
@@ -55,9 +45,4 @@ async def read_month_posts(
     """
     Get posts for each month
     """
-    posts = []
-
-    async for post in crud.get_month_posts(client, year, month):
-        posts.append(post)
-
-    return posts
+    return [post async for post in crud.get_month_posts(client, year, month)]
