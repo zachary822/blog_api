@@ -10,9 +10,11 @@ def get_image(fs: AsyncIOMotorGridFSBucket, object_id: ObjectId) -> AgnosticGrid
     return fs.open_download_stream(object_id)
 
 
-async def grid_iter(out: AgnosticGridOut) -> AsyncIterator[bytes]:
+async def grid_iter(
+    out: AgnosticGridOut, chunk_size: int = 4096
+) -> AsyncIterator[bytes]:
     while True:
-        content = await out.read(1024)
+        content = await out.read(chunk_size)
         if not content:
             break
         yield content
