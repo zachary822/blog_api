@@ -1,3 +1,4 @@
+import pendulum
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from gridfs.errors import NoFile
@@ -11,15 +12,22 @@ router = APIRouter(tags=["images"])
 
 
 @router.get("/{object_id}/", response_class=StreamingResponse)
+@router.head("/{object_id}/", response_class=StreamingResponse)
 async def get_image(
     object_id: ObjectId, fs: AsyncIOMotorGridFSBucket = Depends(get_fs)
 ):
     try:
         grid_out = await crud.get_image(fs, object_id)
+        last_modified = pendulum.instance(grid_out.upload_date)
         return StreamingResponse(
             crud.grid_iter(grid_out),
             media_type=grid_out.content_type,
-            headers={"Content-Length": str(grid_out.length)},
+            headers={
+                "Content-Length": str(grid_out.length),
+                "Last-Modified": last_modified.format(
+                    "ddd, DD MMM YYYY HH:mm:ss [GMT]"
+                ),
+            },
         )
     except NoFile as e:
         raise HTTPException(

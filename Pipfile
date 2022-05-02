@@ -8,6 +8,7 @@ fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 pydantic = {extras = ["dotenv"], version = "*"}
 motor = {extras = ["srv"], version = "*"}
+pendulum = "*"
 
 [dev-packages]
 mypy = "*"
