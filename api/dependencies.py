@@ -1,11 +1,21 @@
+from datetime import datetime
 from functools import cache
-from typing import AsyncIterator, Optional
+from typing import Any, AsyncIterator, Optional
 
+import pendulum
+from bson.codec_options import TypeDecoder, TypeRegistry
 from fastapi import Depends, Response
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 from pydantic import BaseModel, conint
 
 from api.settings import Settings
+
+
+class DatetimeDecoder(TypeDecoder):
+    bson_type = datetime
+
+    def transform_bson(self, value: Any) -> Any:
+        return pendulum.instance(value)
 
 
 @cache
@@ -16,7 +26,11 @@ def get_settings() -> Settings:
 async def get_client(
     settings: Settings = Depends(get_settings),
 ) -> AsyncIterator[AsyncIOMotorClient]:
-    yield AsyncIOMotorClient(settings.MONGODB_URI)
+    yield AsyncIOMotorClient(
+        settings.MONGODB_URI,
+        tz_aware=True,
+        type_registry=TypeRegistry(type_codecs=[DatetimeDecoder()]),
+    )
 
 
 async def get_fs(client: AsyncIOMotorClient = Depends(get_client)):

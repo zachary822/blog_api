@@ -1,6 +1,6 @@
 import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from api.dependencies import CommonQueryParams, get_client
@@ -26,9 +26,15 @@ async def read_posts_summary(client: AsyncIOMotorClient = Depends(get_client)):
 
 @router.get("/{object_id}/", response_model=Post, response_model_by_alias=True)
 async def read_post(
-    object_id: ObjectId, client: AsyncIOMotorClient = Depends(get_client)
+    object_id: ObjectId,
+    response: Response,
+    client: AsyncIOMotorClient = Depends(get_client),
 ):
     post = await crud.get_post(client, object_id)
+
+    response.headers["Last-Modified"] = post["created"].format(
+        "ddd, DD MMM YYYY HH:mm:ss [GMT]"
+    )
 
     if not post:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")

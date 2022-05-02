@@ -11,8 +11,9 @@ from api.types import ObjectId
 router = APIRouter(tags=["images"])
 
 
-@router.get("/{object_id}/", response_class=StreamingResponse)
-@router.head("/{object_id}/", response_class=StreamingResponse)
+@router.api_route(
+    "/{object_id}/", response_class=StreamingResponse, methods=["GET", "HEAD"]
+)
 async def get_image(
     object_id: ObjectId, fs: AsyncIOMotorGridFSBucket = Depends(get_fs)
 ):
