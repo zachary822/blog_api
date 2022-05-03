@@ -9,12 +9,14 @@ uvicorn = {extras = ["standard"], version = "*"}
 pydantic = {extras = ["dotenv"], version = "*"}
 motor = {extras = ["srv"], version = "*"}
 pendulum = "*"
+pyyaml = "*"
 
 [dev-packages]
 mypy = "*"
 pytest = "*"
 pytest-asyncio = "*"
 requests = "*"
+types-pyyaml = "*"
 
 [requires]
 python_version = "3.9"
