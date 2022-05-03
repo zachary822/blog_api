@@ -1,12 +1,17 @@
+import logging.config
+
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
 from api import health, images, posts
+from api.middlewares import LoggingMiddleware
 from api.settings import Settings
 
 settings = Settings()
+
+logging.config.fileConfig(settings.LOGGING_CONFIG)
 
 app = FastAPI(title="ThoughtBank Blog API")
 
@@ -15,6 +20,7 @@ app.add_middleware(
     allow_origins=settings.ALLOW_ORIGINS,
     allow_headers=settings.ALLOW_METHODS,
 )
+app.add_middleware(LoggingMiddleware)
 
 app.include_router(posts.router, prefix="/posts")
 app.include_router(images.router, prefix="/images")
