@@ -7,6 +7,7 @@ from api.dependencies import CommonQueryParams, get_client
 from api.posts import crud
 from api.schemas import MonthSummary, Post
 from api.types import ObjectId
+from api.utils import to_rfc7231_format
 
 router = APIRouter(tags=["posts"])
 
@@ -32,9 +33,7 @@ async def read_post(
 ):
     post = await crud.get_post(client, object_id)
 
-    response.headers["Last-Modified"] = post["created"].format(
-        "ddd, DD MMM YYYY HH:mm:ss [GMT]"
-    )
+    response.headers["Last-Modified"] = to_rfc7231_format(post["created"])
 
     if not post:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")
