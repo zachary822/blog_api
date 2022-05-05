@@ -1,11 +1,10 @@
-import yaml
-from fastapi import FastAPI, Request, Response, status
-from fastapi.concurrency import run_in_threadpool
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
 from api import health, images, posts
+from api.responses import YAMLResponse
 from api.settings import Settings
 
 settings = Settings()
@@ -30,15 +29,12 @@ def handle_gridfs_file_not_found(_request: Request, _exc: NoFile):
     )
 
 
-@app.get("/openapi.yaml")
-async def read_openapi_yaml() -> Response:
-    openapi_json = app.openapi()
-    return Response(
-        await run_in_threadpool(
-            yaml.dump, openapi_json, sort_keys=False, Dumper=yaml.Dumper
-        ),
-        media_type="text/yaml",
-    )
+@app.get(
+    "/openapi.yaml",
+    response_class=YAMLResponse,
+)
+async def read_openapi_yaml():
+    return app.openapi()
 
 
 @app.get("/")
