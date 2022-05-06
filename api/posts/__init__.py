@@ -33,10 +33,10 @@ async def read_post(
 ):
     post = await crud.get_post(client, object_id)
 
-    response.headers["Last-Modified"] = to_rfc7231_format(post["created"])
-
     if not post:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")
+
+    response.headers["Last-Modified"] = to_rfc7231_format(post["created"])
 
     return post
 

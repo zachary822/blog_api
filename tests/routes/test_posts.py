@@ -22,12 +22,18 @@ class TestPosts:
         assert response.status_code == 200
         assert response.json() == posts
 
-    def test_read_post(self, client, mongodb_client, post):
+    def test_read_post_found(self, client, mongodb_client, post):
         mongodb_client.blog.posts.find_one = AsyncMock(return_value=post)
 
         response = client.get("/posts/aaaaaaaaaaaaaaaaaaaaaaaa/")
         assert response.status_code == 200
         assert response.json() == post
+
+    def test_read_post_not_found(self, client, mongodb_client, post):
+        mongodb_client.blog.posts.find_one = AsyncMock(return_value=None)
+
+        response = client.get("/posts/aaaaaaaaaaaaaaaaaaaaaaaa/")
+        assert response.status_code == 404
 
     def test_read_post_summary(self, client, mongodb_client):
         summary = [
