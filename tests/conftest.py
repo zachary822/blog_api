@@ -1,9 +1,9 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
 
-from api.dependencies import get_client, get_fs
+from api.dependencies import get_client, get_fs, get_session
 from api.main import app
 
 
@@ -13,19 +13,32 @@ def mongodb_client():
 
 
 @pytest.fixture
+def mongodb_session():
+    yield MagicMock()
+
+
+@pytest.fixture
 def mongodb_fs():
     yield MagicMock()
 
 
 @pytest.fixture
-def client(mongodb_client, mongodb_fs):
-    def get_mock_client():
+def client(mongodb_client, mongodb_fs, mongodb_session):
+    async def get_mock_client():
         yield mongodb_client
 
-    def get_mock_fs():
+    async def get_mock_session():
+        yield mongodb_session
+
+    async def get_mock_fs():
         yield mongodb_fs
 
-    app.dependency_overrides[get_client] = get_mock_client
-    app.dependency_overrides[get_fs] = get_mock_fs
-
-    yield TestClient(app)
+    with patch.dict(
+        app.dependency_overrides,
+        {
+            get_client: get_mock_client,
+            get_fs: get_mock_fs,
+            get_session: get_mock_session,
+        },
+    ):
+        yield TestClient(app)

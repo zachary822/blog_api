@@ -33,6 +33,12 @@ async def get_client(
     )
 
 
+async def get_session(client: AsyncIOMotorClient = Depends(get_client)):
+    async with await client.start_session() as s:
+        async with s.start_transaction():
+            yield s
+
+
 async def get_fs(client: AsyncIOMotorClient = Depends(get_client)):
     yield AsyncIOMotorGridFSBucket(client.blog)
 

@@ -1,12 +1,15 @@
 from typing import Optional
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorClientSession
 
 from api.types import ObjectId
 
 
 def get_posts(
-    client: AsyncIOMotorClient, limit: Optional[int] = 10, offset: Optional[int] = 0
+    client: AsyncIOMotorClient,
+    session: AsyncIOMotorClientSession,
+    limit: Optional[int] = 10,
+    offset: Optional[int] = 0,
 ):
     return client.blog.posts.aggregate(
         [
@@ -18,12 +21,17 @@ def get_posts(
             {"$sort": {"created": -1}},
             {"$skip": offset},
             {"$limit": limit},
-        ]
+        ],
+        session=session,
     )
 
 
-def get_post(client: AsyncIOMotorClient, object_id: ObjectId):
-    return client.blog.posts.find_one({"_id": object_id, "published": True})
+def get_post(
+    client: AsyncIOMotorClient, session: AsyncIOMotorClientSession, object_id: ObjectId
+):
+    return client.blog.posts.find_one(
+        {"_id": object_id, "published": True}, session=session
+    )
 
 
 SUMMARY_PIPELINE = [
@@ -46,11 +54,16 @@ SUMMARY_PIPELINE = [
 ]
 
 
-def get_summary(client: AsyncIOMotorClient):
-    return client.blog.posts.aggregate(SUMMARY_PIPELINE)
+def get_summary(client: AsyncIOMotorClient, session: AsyncIOMotorClientSession):
+    return client.blog.posts.aggregate(SUMMARY_PIPELINE, session=session)
 
 
-def get_month_posts(client: AsyncIOMotorClient, year: int, month: int):
+def get_month_posts(
+    client: AsyncIOMotorClient,
+    session: AsyncIOMotorClientSession,
+    year: int,
+    month: int,
+):
     return client.blog.posts.aggregate(
         [
             {
@@ -65,5 +78,6 @@ def get_month_posts(client: AsyncIOMotorClient, year: int, month: int):
                 }
             },
             {"$sort": {"created": -1}},
-        ]
+        ],
+        session=session,
     )
