@@ -1,7 +1,9 @@
 import datetime
+from dataclasses import asdict
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Response, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Response, status
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorClientSession
+from pydantic import constr
 
 from api.dependencies import CommonQueryParams, get_client, get_session
 from api.posts import crud
@@ -18,7 +20,7 @@ async def read_posts(
     session: AsyncIOMotorClientSession = Depends(get_session),
     commons: CommonQueryParams = Depends(),
 ):
-    return [post async for post in crud.get_posts(client, session, **commons.dict())]
+    return [post async for post in crud.get_posts(client, session, **asdict(commons))]
 
 
 @router.get("/summary/", response_model=list[MonthSummary])
@@ -27,6 +29,17 @@ async def read_posts_summary(
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
     return [post async for post in crud.get_summary(client, session)]
+
+
+@router.post("/suggestions/")
+async def suggest_title(
+    body: constr(strip_whitespace=True, min_length=1) = Body(  # type: ignore[valid-type]
+        ..., media_type="text/plain"
+    ),
+    client: AsyncIOMotorClient = Depends(get_client),
+    session: AsyncIOMotorClientSession = Depends(get_session),
+):
+    return [t["title"] async for t in crud.get_titles(client, session, body)]
 
 
 @router.get("/{object_id}/", response_model=Post, response_model_by_alias=True)

@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from datetime import datetime
 from functools import cache
 from typing import Any, AsyncIterator, Optional
 
 import pendulum
 from bson.codec_options import TypeDecoder, TypeRegistry
-from fastapi import Depends, Response
+from fastapi import Depends, Query, Response
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
-from pydantic import BaseModel, conint
+from pydantic import conint, constr
 
 from api.settings import Settings
 
@@ -35,15 +36,18 @@ async def get_client(
 
 async def get_session(client: AsyncIOMotorClient = Depends(get_client)):
     async with await client.start_session() as s:
-        async with s.start_transaction():
-            yield s
+        yield s
 
 
 async def get_fs(client: AsyncIOMotorClient = Depends(get_client)):
     yield AsyncIOMotorGridFSBucket(client.blog)
 
 
-class CommonQueryParams(BaseModel):
+@dataclass
+class CommonQueryParams:
+    q: Optional[constr(strip_whitespace=True, min_length=1)] = Query(  # type: ignore[valid-type]
+        None, description="search post"
+    )
     limit: Optional[conint(le=100, ge=0)] = 10  # type: ignore[valid-type]
     offset: Optional[conint(ge=0)] = 0  # type: ignore[valid-type]
 

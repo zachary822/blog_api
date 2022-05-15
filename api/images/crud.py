@@ -1,14 +1,22 @@
 from typing import AsyncIterator
 
 import pendulum
-from motor.motor_asyncio import AsyncIOMotorGridFSBucket, AsyncIOMotorGridOut
+from motor.motor_asyncio import (
+    AsyncIOMotorClientSession,
+    AsyncIOMotorGridFSBucket,
+    AsyncIOMotorGridOut,
+)
 
 from api.types import ObjectId
 from api.utils import to_rfc7231_format
 
 
-def get_image(fs: AsyncIOMotorGridFSBucket, object_id: ObjectId) -> AsyncIOMotorGridOut:
-    return fs.open_download_stream(object_id)
+def get_image(
+    fs: AsyncIOMotorGridFSBucket,
+    session: AsyncIOMotorClientSession,
+    object_id: ObjectId,
+) -> AsyncIOMotorGridOut:
+    return fs.open_download_stream(object_id, session=session)
 
 
 def get_image_headers(out: AsyncIOMotorGridOut):

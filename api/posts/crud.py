@@ -8,19 +8,45 @@ from api.types import ObjectId
 def get_posts(
     client: AsyncIOMotorClient,
     session: AsyncIOMotorClientSession,
+    *,
+    q: Optional[str] = None,
     limit: Optional[int] = 10,
     offset: Optional[int] = 0,
 ):
+    pipeline = [
+        {"$match": {"published": True}},
+    ]
+
+    if q:
+        pipeline.insert(
+            0,
+            {
+                "$search": {
+                    "text": {"query": q, "path": ["title", "body"]},  # type: ignore[dict-item]
+                }
+            },
+        )
+    else:
+        pipeline.append({"$sort": {"created": -1}})  # type: ignore[dict-item]
+
+    pipeline += [
+        {"$skip": offset},  # type: ignore[dict-item]
+        {"$limit": limit},  # type: ignore[dict-item]
+    ]
+
+    return client.blog.posts.aggregate(
+        pipeline,
+        session=session,
+    )
+
+
+def get_titles(client: AsyncIOMotorClient, session: AsyncIOMotorClientSession, q: str):
     return client.blog.posts.aggregate(
         [
-            {
-                "$match": {
-                    "published": True,
-                },
-            },
-            {"$sort": {"created": -1}},
-            {"$skip": offset},
-            {"$limit": limit},
+            {"$search": {"autocomplete": {"query": q, "path": "title"}}},
+            {"$match": {"published": True}},
+            {"$limit": 20},
+            {"$project": {"_id": 0, "title": 1}},
         ],
         session=session,
     )
@@ -49,8 +75,8 @@ SUMMARY_PIPELINE = [
             "count": {"$sum": 1},
         },
     },
-    {"$addFields": {"year": "$_id.year", "month": "$_id.month"}},
-    {"$sort": {"_id.year": -1, "_id.month": -1}},
+    {"$project": {"_id": 0, "year": "$_id.year", "month": "$_id.month", "count": 1}},
+    {"$sort": {"year": -1, "month": -1}},
 ]
 
 
