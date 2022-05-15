@@ -20,7 +20,14 @@ async def read_posts(
     session: AsyncIOMotorClientSession = Depends(get_session),
     commons: CommonQueryParams = Depends(),
 ):
-    return [post async for post in crud.get_posts(client, session, **asdict(commons))]
+    posts = [post async for post in crud.get_posts(client, session, **asdict(commons))]
+
+    if not posts and commons.q:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="no posts returned by query"
+        )
+
+    return posts
 
 
 @router.get("/summary/", response_model=list[MonthSummary])

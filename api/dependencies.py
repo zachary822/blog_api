@@ -48,7 +48,7 @@ class CommonQueryParams:
     q: Optional[constr(strip_whitespace=True, min_length=1)] = Query(  # type: ignore[valid-type]
         None, description="search post"
     )
-    limit: Optional[conint(le=100, ge=0)] = 10  # type: ignore[valid-type]
+    limit: Optional[conint(le=100, ge=1)] = 10  # type: ignore[valid-type]
     offset: Optional[conint(ge=0)] = 0  # type: ignore[valid-type]
 
 
