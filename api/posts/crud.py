@@ -43,7 +43,7 @@ def get_posts(
 def get_titles(client: AsyncIOMotorClient, session: AsyncIOMotorClientSession, q: str):
     return client.blog.posts.aggregate(
         [
-            {"$search": {"autocomplete": {"query": q, "path": "title"}}},
+            {"$search": {"autocomplete": {"query": q, "path": "title", "fuzzy": {}}}},
             {"$match": {"published": True}},
             {"$limit": 20},
             {"$project": {"_id": 0, "title": 1}},
