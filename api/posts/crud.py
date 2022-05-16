@@ -22,7 +22,7 @@ def get_posts(
             0,
             {
                 "$search": {
-                    "text": {"query": q, "path": ["title", "body"]},  # type: ignore[dict-item]
+                    "text": {"query": q, "path": ["title", "body"], "fuzzy": {}},  # type: ignore[dict-item]
                 }
             },
         )
