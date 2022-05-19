@@ -4,6 +4,7 @@ from functools import cache
 from typing import Any, AsyncIterator, Optional
 
 import pendulum
+from async_lru import alru_cache
 from bson.codec_options import TypeDecoder, TypeRegistry
 from fastapi import Depends, Query, Response
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
@@ -24,10 +25,11 @@ def get_settings() -> Settings:
     return Settings()
 
 
+@alru_cache
 async def get_client(
     settings: Settings = Depends(get_settings),
 ) -> AsyncIterator[AsyncIOMotorClient]:
-    yield AsyncIOMotorClient(
+    return AsyncIOMotorClient(
         settings.MONGODB_URI,
         tz_aware=True,
         type_registry=TypeRegistry(type_codecs=[DatetimeDecoder()]),
@@ -40,7 +42,7 @@ async def get_session(client: AsyncIOMotorClient = Depends(get_client)):
 
 
 async def get_fs(client: AsyncIOMotorClient = Depends(get_client)):
-    yield AsyncIOMotorGridFSBucket(client.blog)
+    return AsyncIOMotorGridFSBucket(client.blog)
 
 
 @dataclass

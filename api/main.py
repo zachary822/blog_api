@@ -11,6 +11,18 @@ settings = Settings()
 
 app = FastAPI(title="ThoughtBank Blog API")
 
+
+if settings.DEBUG:
+    import pyinstrument
+
+    @app.middleware("http")
+    async def add_process_time_header(request: Request, call_next):
+        with pyinstrument.Profiler(async_mode="disabled") as p:
+            response = await call_next(request)
+        p.print()
+        return response
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOW_ORIGINS,
