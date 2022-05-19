@@ -17,7 +17,7 @@ if settings.DEBUG:
 
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next):
-        with pyinstrument.Profiler(async_mode="disabled") as p:
+        with pyinstrument.Profiler() as p:
             response = await call_next(request)
         p.print()
         return response
