@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
 from api import health, images, posts
+from api.middlewares import ProfilerMiddleware
 from api.responses import YAMLResponse
 from api.settings import Settings
 
@@ -13,14 +14,7 @@ app = FastAPI(title="ThoughtBank Blog API")
 
 
 if settings.DEBUG:
-    import pyinstrument
-
-    @app.middleware("http")
-    async def add_process_time_header(request: Request, call_next):
-        with pyinstrument.Profiler() as p:
-            response = await call_next(request)
-        p.print()
-        return response
+    app.add_middleware(ProfilerMiddleware)
 
 
 app.add_middleware(
