@@ -10,6 +10,7 @@ pydantic = {extras = ["dotenv"], version = "*"}
 motor = {extras = ["srv"], version = "*"}
 pendulum = "*"
 pyyaml = "*"
+newrelic = "*"
 
 [dev-packages]
 mypy = "*"
