@@ -12,16 +12,14 @@ settings = Settings()
 
 app = FastAPI(title="ThoughtBank Blog API")
 
-
-if settings.DEBUG:
-    app.add_middleware(ProfilerMiddleware)
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOW_ORIGINS,
     allow_headers=settings.ALLOW_METHODS,
 )
+
+if settings.DEBUG:
+    app.add_middleware(ProfilerMiddleware)
 
 app.include_router(posts.router, prefix="/posts")
 app.include_router(images.router, prefix="/images")

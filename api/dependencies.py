@@ -7,7 +7,12 @@ import pendulum
 from async_lru import alru_cache
 from bson.codec_options import TypeDecoder, TypeRegistry
 from fastapi import Depends, Query, Response
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
+from motor.motor_asyncio import (
+    AsyncIOMotorClient,
+    AsyncIOMotorClientSession,
+    AsyncIOMotorDatabase,
+    AsyncIOMotorGridFSBucket,
+)
 from pydantic import conint, constr
 
 from api.settings import Settings
@@ -36,13 +41,19 @@ async def get_client(
     )
 
 
-async def get_session(client: AsyncIOMotorClient = Depends(get_client)):
+async def get_db(client=Depends(get_client)) -> AsyncIterator[AsyncIOMotorDatabase]:
+    yield client.get_default_database()
+
+
+async def get_session(
+    client: AsyncIOMotorClient = Depends(get_client),
+) -> AsyncIterator[AsyncIOMotorClientSession]:
     async with await client.start_session() as s:
         yield s
 
 
-async def get_fs(client: AsyncIOMotorClient = Depends(get_client)):
-    return AsyncIOMotorGridFSBucket(client.blog)
+async def get_fs(db: AsyncIOMotorDatabase = Depends(get_db)):
+    return AsyncIOMotorGridFSBucket(db)
 
 
 @dataclass

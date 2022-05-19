@@ -1,12 +1,12 @@
 from typing import Optional
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorClientSession
+from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 
 from api.types import ObjectId
 
 
 def get_posts(
-    client: AsyncIOMotorClient,
+    db: AsyncIOMotorDatabase,
     session: AsyncIOMotorClientSession,
     *,
     q: Optional[str] = None,
@@ -34,14 +34,14 @@ def get_posts(
         {"$limit": limit},  # type: ignore[dict-item]
     ]
 
-    return client.blog.posts.aggregate(
+    return db.posts.aggregate(
         pipeline,
         session=session,
     )
 
 
-def get_titles(client: AsyncIOMotorClient, session: AsyncIOMotorClientSession, q: str):
-    return client.blog.posts.aggregate(
+def get_titles(db: AsyncIOMotorDatabase, session: AsyncIOMotorClientSession, q: str):
+    return db.posts.aggregate(
         [
             {"$search": {"autocomplete": {"query": q, "path": "title", "fuzzy": {}}}},
             {"$match": {"published": True}},
@@ -53,11 +53,9 @@ def get_titles(client: AsyncIOMotorClient, session: AsyncIOMotorClientSession, q
 
 
 def get_post(
-    client: AsyncIOMotorClient, session: AsyncIOMotorClientSession, object_id: ObjectId
+    db: AsyncIOMotorDatabase, session: AsyncIOMotorClientSession, object_id: ObjectId
 ):
-    return client.blog.posts.find_one(
-        {"_id": object_id, "published": True}, session=session
-    )
+    return db.posts.find_one({"_id": object_id, "published": True}, session=session)
 
 
 SUMMARY_PIPELINE = [
@@ -80,17 +78,17 @@ SUMMARY_PIPELINE = [
 ]
 
 
-def get_summary(client: AsyncIOMotorClient, session: AsyncIOMotorClientSession):
-    return client.blog.posts.aggregate(SUMMARY_PIPELINE, session=session)
+def get_summary(db: AsyncIOMotorDatabase, session: AsyncIOMotorClientSession):
+    return db.posts.aggregate(SUMMARY_PIPELINE, session=session)
 
 
 def get_month_posts(
-    client: AsyncIOMotorClient,
+    db: AsyncIOMotorDatabase,
     session: AsyncIOMotorClientSession,
     year: int,
     month: int,
 ):
-    return client.blog.posts.aggregate(
+    return db.posts.aggregate(
         [
             {
                 "$match": {

@@ -10,5 +10,5 @@ class ProfilerMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         with pyinstrument.Profiler(**self.profiler_kwargs) as p:
             response = await call_next(request)
-        p.print()
+        p.print(unicode=True, color=True)
         return response

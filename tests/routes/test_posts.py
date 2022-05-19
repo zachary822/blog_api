@@ -13,29 +13,29 @@ class TestPosts:
             "body": "blah",
         }
 
-    def test_read_posts(self, client, mongodb_client, post):
+    def test_read_posts(self, client, mongodb_db, post):
         posts = [post]
 
-        mongodb_client.blog.posts.aggregate.return_value.__aiter__.return_value = posts
+        mongodb_db.posts.aggregate.return_value.__aiter__.return_value = posts
 
         response = client.get("/posts/")
         assert response.status_code == 200
         assert response.json() == posts
 
-    def test_read_post_found(self, client, mongodb_client, post):
-        mongodb_client.blog.posts.find_one = AsyncMock(return_value=post)
+    def test_read_post_found(self, client, mongodb_db, post):
+        mongodb_db.posts.find_one = AsyncMock(return_value=post)
 
         response = client.get("/posts/aaaaaaaaaaaaaaaaaaaaaaaa/")
         assert response.status_code == 200
         assert response.json() == post
 
-    def test_read_post_not_found(self, client, mongodb_client, post):
-        mongodb_client.blog.posts.find_one = AsyncMock(return_value=None)
+    def test_read_post_not_found(self, client, mongodb_db, post):
+        mongodb_db.posts.find_one = AsyncMock(return_value=None)
 
         response = client.get("/posts/aaaaaaaaaaaaaaaaaaaaaaaa/")
         assert response.status_code == 404
 
-    def test_read_post_summary(self, client, mongodb_client):
+    def test_read_post_summary(self, client, mongodb_db):
         summary = [
             {
                 "year": 2022,
@@ -44,18 +44,16 @@ class TestPosts:
             }
         ]
 
-        mongodb_client.blog.posts.aggregate.return_value.__aiter__.return_value = (
-            summary
-        )
+        mongodb_db.posts.aggregate.return_value.__aiter__.return_value = summary
 
         response = client.get("/posts/summary/")
         assert response.status_code == 200
         assert response.json() == summary
 
-    def test_read_month_posts(self, client, mongodb_client, post):
+    def test_read_month_posts(self, client, mongodb_db, post):
         posts = [post]
 
-        mongodb_client.blog.posts.aggregate.return_value.__aiter__.return_value = posts
+        mongodb_db.posts.aggregate.return_value.__aiter__.return_value = posts
 
         response = client.get("/posts/2022/4/")
         assert response.status_code == 200
