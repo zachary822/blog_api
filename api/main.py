@@ -4,7 +4,6 @@ from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
 from api import health, images, posts
-from api.middlewares import ProfilerMiddleware
 from api.responses import YAMLResponse
 from api.settings import Settings
 
@@ -19,6 +18,8 @@ app.add_middleware(
 )
 
 if settings.DEBUG:
+    from api.middlewares import ProfilerMiddleware
+
     app.add_middleware(ProfilerMiddleware)
 
 app.include_router(posts.router, prefix="/posts")

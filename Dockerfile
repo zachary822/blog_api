@@ -9,4 +9,5 @@ RUN pipenv install --deploy --system
 COPY . .
 
 ENV NEW_RELIC_CONFIG_FILE=newrelic.ini
-CMD newrelic-admin run-program uvicorn api.main:app --port $PORT --host 0.0.0.0
+ENTRYPOINT newrelic-admin run-program
+CMD uvicorn api.main:app --port $PORT --host 0.0.0.0
