@@ -1,17 +1,9 @@
 import datetime
 from dataclasses import asdict
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException,
-    Path,
-    Response,
-    WebSocket,
-    WebSocketDisconnect,
-    status,
-)
+from fastapi import APIRouter, Body, Depends, HTTPException, Path, Response, status
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
+from pydantic import constr
 
 from api.dependencies import CommonQueryParams, get_db, get_session
 from api.posts import crud
@@ -46,23 +38,15 @@ async def read_posts_summary(
     return [post async for post in crud.get_summary(db, session)]
 
 
-@router.websocket("/suggestions/")
+@router.post("/suggestions/")
 async def suggest_title(
-    websocket: WebSocket,
+    body: constr(strip_whitespace=True, min_length=1) = Body(  # type: ignore[valid-type]
+        ..., media_type="text/plain"
+    ),
     db: AsyncIOMotorDatabase = Depends(get_db),
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
-    await websocket.accept()
-    try:
-        while True:
-            data = await websocket.receive_text()
-            if not data:
-                continue
-            await websocket.send_json(
-                [t["title"] async for t in crud.get_titles(db, session, data)]
-            )
-    except WebSocketDisconnect:
-        pass
+    return [t["title"] async for t in crud.get_titles(db, session, body)]
 
 
 @router.get("/{object_id}/", response_model=Post, response_model_by_alias=True)
