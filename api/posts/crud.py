@@ -138,7 +138,7 @@ async def get_feed(
         E.channel(
             E.title("ThoughtBank Blog"),
             A.link(
-                href="https://blog.thoughtbank.app/posts/feed/",
+                href="https://api.thoughtbank.app/posts/feed/",
                 rel="self",
                 type="application/rss+xml",
             ),
