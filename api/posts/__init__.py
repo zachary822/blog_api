@@ -39,12 +39,12 @@ async def read_posts_summary(
     return [post async for post in crud.get_summary(db, session)]
 
 
-@router.get("/feed/")
+@router.get("/feed/", response_class=RSSResponse)
 async def read_posts_feed(
     db: AsyncIOMotorDatabase = Depends(get_db),
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
-    return RSSResponse(await crud.get_feed(db, session), media_type="application/xml")
+    return RSSResponse(await crud.get_feed(db, session))
 
 
 @router.post("/suggestions/")
