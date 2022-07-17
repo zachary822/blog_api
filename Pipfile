@@ -13,6 +13,7 @@ pyyaml = "*"
 newrelic = "*"
 async-lru = "*"
 lxml = "*"
+markdown = "*"
 
 [dev-packages]
 mypy = "*"

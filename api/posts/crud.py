@@ -1,5 +1,6 @@
 from typing import Optional
 
+import markdown
 from lxml.builder import ElementMaker
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 
@@ -120,7 +121,7 @@ A = ElementMaker(namespace="http://www.w3.org/2005/Atom")
 def create_item(post: Post):
     return E.item(
         E.title(post.title),
-        E.description(post.body),
+        E.description(markdown.markdown(post.body, extensions=["fenced_code"])),
         E.pubDate(post.created.to_rfc822_string()),
         E.guid(f"https://blog.thoughtbank.app/posts/{post.id}"),
     )

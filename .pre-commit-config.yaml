@@ -13,6 +13,7 @@ repos:
         additional_dependencies:
           - pydantic
           - types-PyYAML
+          - types-Markdown
   - repo: https://github.com/psf/black
     rev: 22.3.0
     hooks:
