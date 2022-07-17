@@ -1,10 +1,9 @@
 import datetime
 from dataclasses import asdict
-from typing import Literal
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Response, status
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
-from pydantic import BaseModel, constr
+from pydantic import constr
 
 from api.dependencies import CommonQueryParams, get_db, get_session
 from api.posts import crud
@@ -39,10 +38,6 @@ async def read_posts_summary(
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
     return [post async for post in crud.get_summary(db, session)]
-
-
-class A(BaseModel):
-    a: Literal["2.0"] = "2.0"
 
 
 @router.get(
