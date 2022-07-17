@@ -1,10 +1,8 @@
 from typing import Optional
 
-import markdown
-from lxml.builder import ElementMaker
-from lxml.etree import CDATA
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 
+from api.posts.feed import Feed
 from api.schemas import Post
 from api.types import ObjectId
 
@@ -111,40 +109,16 @@ def get_month_posts(
     )
 
 
-NSMAP = {
-    "atom": "http://www.w3.org/2005/Atom",
-}
-
-E = ElementMaker(nsmap=NSMAP)
-A = ElementMaker(namespace="http://www.w3.org/2005/Atom")
-
-
-def create_item(post: Post):
-    return E.item(
-        E.title(post.title),
-        E.description(CDATA(markdown.markdown(post.body, extensions=["fenced_code"]))),
-        E.pubDate(post.created.to_rfc822_string()),
-        E.guid(f"https://blog.thoughtbank.app/posts/{post.id}"),
-    )
-
-
 async def get_feed(
     db: AsyncIOMotorDatabase,
     session: AsyncIOMotorClientSession,
 ):
-    items = [create_item(Post(**post)) async for post in get_posts(db, session)]
+    posts = [Post(**post) async for post in get_posts(db, session)]
 
-    return E.rss(
-        E.channel(
-            E.title("ThoughtBank Blog"),
-            A.link(
-                href="https://api.thoughtbank.app/posts/feed/",
-                rel="self",
-                type="application/rss+xml",
-            ),
-            E.link("https://blog.thoughtbank.app/"),
-            E.description("All manners of tech posts."),
-            *items,
-        ),
-        version="2.0",
-    )
+    return Feed(
+        title="ThoughtBank Blog",
+        link="https://blog.thoughtbank.app/",
+        feed_link="https://api.thoughtbank.app/posts/feed/",
+        posts=posts,
+        description="All manners of tech posts.",
+    ).to_etree()
