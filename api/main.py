@@ -4,10 +4,10 @@ from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
 from api import health, images, posts
+from api.dependencies import get_settings
 from api.responses import YAMLResponse
-from api.settings import Settings
 
-settings = Settings()
+settings = get_settings()
 
 app = FastAPI(title="ThoughtBank Blog API")
 
