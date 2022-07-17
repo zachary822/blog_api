@@ -1,12 +1,14 @@
 import datetime
 from dataclasses import asdict
+from typing import Literal
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Response, status
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
-from pydantic import constr
+from pydantic import BaseModel, constr
 
 from api.dependencies import CommonQueryParams, get_db, get_session
 from api.posts import crud
+from api.posts.feed import RSS_SCHEMA
 from api.responses import RSSResponse
 from api.schemas import MonthSummary, Post
 from api.types import ObjectId
@@ -39,7 +41,17 @@ async def read_posts_summary(
     return [post async for post in crud.get_summary(db, session)]
 
 
-@router.get("/feed/", response_class=RSSResponse)
+class A(BaseModel):
+    a: Literal["2.0"] = "2.0"
+
+
+@router.get(
+    "/feed/",
+    response_class=RSSResponse,
+    responses={
+        status.HTTP_200_OK: {"content": {"application/rss+xml": {"schema": RSS_SCHEMA}}}
+    },
+)
 async def read_posts_feed(
     db: AsyncIOMotorDatabase = Depends(get_db),
     session: AsyncIOMotorClientSession = Depends(get_session),

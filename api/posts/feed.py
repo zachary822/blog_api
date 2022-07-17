@@ -4,6 +4,38 @@ from lxml.etree import CDATA
 
 from api.schemas import Post
 
+RSS_SCHEMA = {
+    "type": "object",
+    "xml": {"name": "rss"},
+    "properties": {
+        "version": {
+            "type": "string",
+            "enum": ["2.0"],
+            "xml": {"attribute": True},
+            "required": True,
+        },
+        "channel": {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "link": {"type": "string"},
+                "description": {"type": "string"},
+                "item": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "title": {"type": "string"},
+                            "description": {"type": "string"},
+                            "guid": {"type": "string"},
+                        },
+                    },
+                },
+            },
+        },
+    },
+}
+
 NSMAP = {
     "atom": "http://www.w3.org/2005/Atom",
 }
