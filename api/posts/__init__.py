@@ -7,6 +7,7 @@ from pydantic import constr
 
 from api.dependencies import CommonQueryParams, get_db, get_session
 from api.posts import crud
+from api.responses import RSSResponse
 from api.schemas import MonthSummary, Post
 from api.types import ObjectId
 from api.utils import to_rfc7231_format
@@ -36,6 +37,14 @@ async def read_posts_summary(
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
     return [post async for post in crud.get_summary(db, session)]
+
+
+@router.get("/feed/")
+async def read_posts_feed(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    session: AsyncIOMotorClientSession = Depends(get_session),
+):
+    return RSSResponse(await crud.get_feed(db, session), media_type="application/xml")
 
 
 @router.post("/suggestions/")

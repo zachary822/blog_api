@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from pendulum import DateTime
 from pydantic import BaseModel, Field
 
 from api.types import ObjectId
@@ -14,7 +13,7 @@ class Document(BaseModel):
 
 class Post(Document):
     title: str
-    created: datetime
+    created: DateTime
     body: str
 
 

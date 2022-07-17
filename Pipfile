@@ -12,6 +12,7 @@ pendulum = "*"
 pyyaml = "*"
 newrelic = "*"
 async-lru = "*"
+lxml = "*"
 
 [dev-packages]
 mypy = "*"
