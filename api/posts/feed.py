@@ -1,6 +1,7 @@
 import markdown
 from lxml.builder import ElementMaker
 from lxml.etree import CDATA
+from pydantic import BaseModel
 
 from api.schemas import Post
 
@@ -43,20 +44,12 @@ E = ElementMaker(nsmap=NSMAP)
 A = ElementMaker(namespace="http://www.w3.org/2005/Atom")
 
 
-class Feed:
-    def __init__(
-        self,
-        title: str,
-        link: str,
-        feed_link: str,
-        posts: list[Post],
-        description: str = "",
-    ):
-        self.title = title
-        self.link = link
-        self.feed_link = feed_link
-        self.description = description
-        self.posts = posts
+class Feed(BaseModel):
+    title: str
+    link: str
+    feed_link: str
+    description: str = ""
+    posts: list[Post]
 
     @staticmethod
     def create_item(post: Post):

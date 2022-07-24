@@ -113,12 +113,10 @@ async def get_feed(
     db: AsyncIOMotorDatabase,
     session: AsyncIOMotorClientSession,
 ):
-    posts = [Post(**post) async for post in get_posts(db, session)]
-
     return Feed(
         title="ThoughtBank Blog",
         link="https://blog.thoughtbank.app/",
         feed_link="https://api.thoughtbank.app/posts/feed/",
-        posts=posts,
+        posts=[Post(**post) async for post in get_posts(db, session)],
         description="All manners of tech posts.",
     ).to_etree()
