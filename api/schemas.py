@@ -1,5 +1,7 @@
+from typing import Optional
+
 from pendulum import DateTime
-from pydantic import BaseModel, Field
+from pydantic import AnyHttpUrl, BaseModel, Field
 
 from api.types import ObjectId
 
@@ -14,6 +16,7 @@ class Document(BaseModel):
 class Post(Document):
     title: str
     created: DateTime
+    image: Optional[AnyHttpUrl]
     body: str
 
 
