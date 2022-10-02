@@ -16,6 +16,7 @@ class Document(BaseModel):
 class Post(Document):
     title: str
     created: DateTime
+    updated: DateTime
     image: Optional[AnyHttpUrl]
     body: str
 
