@@ -1,10 +1,16 @@
 FROM python:3.10-slim
 
-RUN pip install pipenv
+RUN apt update
+RUN apt install -y curl
 
-COPY Pipfile .
-COPY Pipfile.lock .
-RUN pipenv install --deploy --system
+ENV POETRY_HOME="/root/.poetry"
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="$PATH:$POETRY_HOME/bin:/usr/local/bin"
+RUN poetry config virtualenvs.create false
+
+COPY poetry.lock pyproject.toml ./
+
+RUN  poetry install --no-root
 
 COPY . .
 

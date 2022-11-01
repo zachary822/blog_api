@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "blog-api"
+version = "0.1.0"
+description = ""
+authors = ["Zachary Juang <zachary822@me.com>"]
+readme = "README.md"
+packages = [{include = "blog_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.2"
+uvicorn = {extras = ["standard"], version = "^0.19.0"}
+pydantic = "^1.10.2"
+motor = {extras = ["srv"], version = "^3.1.1"}
+pendulum = "^2.1.2"
+pyyaml = "^6.0"
+newrelic = "^8.4.0"
+async-lru = "^1.0.3"
+lxml = "^4.9.1"
+markdown = "^3.4.1"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.982"
+pytest = "^7.2.0"
+pytest-asyncio = "^0.20.1"
+requests = "^2.28.1"
+types-pyyaml = "^6.0.12.1"
+pyinstrument = "^4.3.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
