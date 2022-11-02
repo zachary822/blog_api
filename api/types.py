@@ -1,6 +1,7 @@
 from typing import Any, Callable, Iterator, Union
 
 import bson
+from bson.errors import InvalidId
 from pydantic import AnyUrl
 
 
@@ -15,7 +16,10 @@ class ObjectId(bson.ObjectId):  # type: ignore[misc,name-defined]
 
     @classmethod
     def validate(cls, v: Union[str, "ObjectId", bytes]) -> "ObjectId":
-        return cls(v)
+        try:
+            return cls(v)
+        except InvalidId as e:
+            raise ValueError("Invalid Id") from e
 
     @classmethod
     def __modify_schema__(cls, field_schema: dict[str, Any]) -> None:

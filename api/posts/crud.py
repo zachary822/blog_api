@@ -62,21 +62,41 @@ def get_post(
 
 SUMMARY_PIPELINE = [
     {
-        "$match": {
-            "published": True,
-        },
-    },
-    {
-        "$group": {
-            "_id": {
-                "year": {"$year": "$created"},
-                "month": {"$month": "$created"},
-            },
-            "count": {"$sum": 1},
-        },
-    },
-    {"$project": {"_id": 0, "year": "$_id.year", "month": "$_id.month", "count": 1}},
-    {"$sort": {"year": -1, "month": -1}},
+        "$facet": {
+            "monthly": [
+                {
+                    "$match": {
+                        "published": True,
+                    },
+                },
+                {
+                    "$group": {
+                        "_id": {
+                            "year": {"$year": "$created"},
+                            "month": {"$month": "$created"},
+                        },
+                        "count": {"$sum": 1},
+                    },
+                },
+                {
+                    "$project": {
+                        "_id": 0,
+                        "year": "$_id.year",
+                        "month": "$_id.month",
+                        "count": 1,
+                    }
+                },
+                {"$sort": {"year": -1, "month": -1}},
+            ],
+            "tags": [
+                {"$match": {"published": True}},
+                {"$unwind": {"path": "$tags"}},
+                {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
+                {"$project": {"_id": 0, "name": "$_id", "count": 1}},
+                {"$sort": {"count": -1, "name": -1}},
+            ],
+        }
+    }
 ]
 
 
@@ -98,6 +118,29 @@ def get_month_posts(
                         "$and": [
                             {"$eq": ({"$year": "$created"}, year)},
                             {"$eq": ({"$month": "$created"}, month)},
+                            {"$eq": ("$published", True)},
+                        ],
+                    },
+                }
+            },
+            {"$sort": {"created": -1}},
+        ],
+        session=session,
+    )
+
+
+def get_tag_posts(
+    db: AsyncIOMotorDatabase,
+    session: AsyncIOMotorClientSession,
+    tag: str,
+):
+    return db.posts.aggregate(
+        [
+            {
+                "$match": {
+                    "$expr": {
+                        "$and": [
+                            {"$in": (tag, "$tags")},
                             {"$eq": ("$published", True)},
                         ],
                     },

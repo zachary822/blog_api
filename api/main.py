@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
+import api.converters  # noqa
 from api import health, images, posts
 from api.dependencies import get_settings
 from api.responses import YAMLResponse

@@ -9,7 +9,7 @@ from api.dependencies import CommonQueryParams, get_db, get_session
 from api.posts import crud
 from api.posts.feed import RSS_SCHEMA
 from api.responses import RSSResponse
-from api.schemas import MonthSummary, Post
+from api.schemas import Post, Summary
 from api.types import ObjectId
 from api.utils import to_rfc7231_format
 
@@ -32,12 +32,29 @@ async def read_posts(
     return posts
 
 
-@router.get("/summary/", response_model=list[MonthSummary])
+@router.get("/{object_id:oid}/", response_model=Post, response_model_by_alias=True)
+async def read_post(
+    response: Response,
+    object_id: ObjectId = Path(pattern=r"[0-9a-fA-F]{24}"),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+    session: AsyncIOMotorClientSession = Depends(get_session),
+):
+    post = await crud.get_post(db, session, object_id)
+
+    if not post:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")
+
+    response.headers["Last-Modified"] = to_rfc7231_format(post["created"])
+
+    return post
+
+
+@router.get("/summary/", response_model=Summary)
 async def read_posts_summary(
     db: AsyncIOMotorDatabase = Depends(get_db),
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
-    return [post async for post in crud.get_summary(db, session)]
+    return await anext(crud.get_summary(db, session))
 
 
 @router.get(
@@ -65,24 +82,23 @@ async def suggest_title(
     return [t["title"] async for t in crud.get_titles(db, session, body)]
 
 
-@router.get("/{object_id}/", response_model=Post, response_model_by_alias=True)
-async def read_post(
-    object_id: ObjectId,
-    response: Response,
+@router.get("/tags/{tag}/", response_model=list[Post])
+async def read_tag_posts(
+    tag: constr(strip_whitespace=True, min_length=1),  # type: ignore[valid-type]
     db: AsyncIOMotorDatabase = Depends(get_db),
     session: AsyncIOMotorClientSession = Depends(get_session),
 ):
-    post = await crud.get_post(db, session, object_id)
+    posts = [Post(**post) async for post in crud.get_tag_posts(db, session, tag)]
 
-    if not post:
+    if not posts:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "post not found")
 
-    response.headers["Last-Modified"] = to_rfc7231_format(post["created"])
-
-    return post
+    return posts
 
 
-@router.get("/{year}/{month}/", response_model=list[Post], response_model_by_alias=True)
+@router.get(
+    "/{year:int}/{month:int}/", response_model=list[Post], response_model_by_alias=True
+)
 async def read_month_posts(
     year: int = Path(..., ge=datetime.MINYEAR, le=datetime.MAXYEAR),
     month: int = Path(..., le=12, ge=1),
