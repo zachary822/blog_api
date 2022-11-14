@@ -10,7 +10,10 @@ class TestPosts:
             "_id": "aaaaaaaaaaaaaaaaaaaaaaaa",
             "title": "blah",
             "created": "2022-04-30T00:00:00+00:00",
+            "updated": "2022-04-30T00:00:00+00:00",
+            "image": "http://example.com/test.png",
             "body": "blah",
+            "tags": [],
         }
 
     def test_read_posts(self, client, mongodb_db, post):
@@ -36,15 +39,18 @@ class TestPosts:
         assert response.status_code == 404
 
     def test_read_post_summary(self, client, mongodb_db):
-        summary = [
-            {
-                "year": 2022,
-                "month": 4,
-                "count": 1,
-            }
-        ]
+        summary = {
+            "monthly": [
+                {
+                    "year": 2022,
+                    "month": 4,
+                    "count": 1,
+                },
+            ],
+            "tags": [{"name": "python", "count": 2}],
+        }
 
-        mongodb_db.posts.aggregate.return_value.__aiter__.return_value = summary
+        mongodb_db.posts.aggregate.return_value.__anext__.return_value = summary
 
         response = client.get("/posts/summary/")
         assert response.status_code == 200
