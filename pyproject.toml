@@ -18,7 +18,7 @@ newrelic = "^8.4.0"
 async-lru = "^1.0.3"
 lxml = "^4.9.1"
 markdown = "^3.4.1"
-
+strawberry-graphql = {extras = ["fastapi"], version = "^0.142.2"}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.982"

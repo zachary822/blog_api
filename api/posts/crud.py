@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 
@@ -12,10 +12,10 @@ def get_posts(
     session: AsyncIOMotorClientSession,
     *,
     q: Optional[str] = None,
-    limit: Optional[int] = 10,
-    offset: Optional[int] = 0,
+    limit: int = 10,
+    offset: int = 0,
 ):
-    pipeline = [
+    pipeline: list[dict[str, Any]] = [
         {"$match": {"published": True}},
     ]
 
@@ -29,12 +29,12 @@ def get_posts(
             },
         )
     else:
-        pipeline.append({"$sort": {"created": -1}})  # type: ignore[dict-item]
+        pipeline.append({"$sort": {"created": -1, "_id": -1}})  # type: ignore[dict-item]
 
-    pipeline += [
-        {"$skip": offset},  # type: ignore[dict-item]
-        {"$limit": limit},  # type: ignore[dict-item]
-    ]
+    if offset > 0:
+        pipeline.append({"$skip": offset})
+
+    pipeline.append({"$limit": limit})
 
     return db.posts.aggregate(
         pipeline,

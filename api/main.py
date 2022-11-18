@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from gridfs.errors import NoFile
 
 import api.converters  # noqa
-from api import health, images, posts
+from api import graphql_app, health, images, posts
 from api.dependencies import get_settings
 from api.responses import YAMLResponse
 
@@ -26,6 +26,7 @@ if settings.DEBUG:
 app.include_router(posts.router, prefix="/posts")
 app.include_router(images.router, prefix="/images")
 app.include_router(health.router, prefix="/health")
+app.include_router(graphql_app.router, prefix="/graphql")
 
 
 @app.exception_handler(NoFile)
@@ -41,8 +42,3 @@ def handle_gridfs_file_not_found(_request: Request, _exc: NoFile):
 )
 async def read_openapi_yaml():
     return app.openapi()
-
-
-@app.get("/")
-def hello_world():
-    return "Hello World!"
