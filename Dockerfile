@@ -1,16 +1,17 @@
 FROM python:3.11-slim
 
 RUN apt update
-RUN apt install -y curl
+RUN apt install -y curl libxml2-dev libxslt-dev python-dev zlib1g-dev build-essential
 
 ENV POETRY_HOME="/root/.poetry"
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="$PATH:$POETRY_HOME/bin:/usr/local/bin"
 RUN poetry config virtualenvs.create false
 
+WORKDIR /app
 COPY poetry.lock pyproject.toml ./
 
-RUN  poetry install --no-root
+RUN poetry install --no-root
 
 COPY . .
 
