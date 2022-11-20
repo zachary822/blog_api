@@ -1,7 +1,7 @@
 FROM python:3.11-slim as base
 
 RUN apt update
-RUN apt install -y curl libxml2-dev libxslt-dev python-dev zlib1g-dev build-essential
+RUN apt install -y curl libxml2-dev libxslt-dev python3-dev zlib1g-dev build-essential
 
 ENV POETRY_HOME="/root/.poetry" \
     VENV_PATH="/app/.venv"
