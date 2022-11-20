@@ -24,7 +24,7 @@ RUN poetry install --no-root
 FROM python:3.11-slim
 ENV VENV_PATH="/app/.venv"
 RUN apt update && \
-    apt install -y  \
+    apt install -y --no-install-recommends \
     libxslt-dev && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
