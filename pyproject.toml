@@ -8,8 +8,8 @@ packages = [{include = "api"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.87.0"
-uvicorn = {extras = ["standard"], version = "^0.19.0"}
+fastapi = "^0.89.1"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
 pydantic = "^1.10.2"
 motor = {extras = ["srv"], version = "^3.1.1"}
 pendulum = "^2.1.2"
@@ -18,7 +18,7 @@ newrelic = "^8.4.0"
 async-lru = "^1.0.3"
 lxml = "^4.9.1"
 markdown = "^3.4.1"
-strawberry-graphql = {extras = ["fastapi"], version = "^0.142.2"}
+strawberry-graphql = {extras = ["fastapi"], version = "^0.155.2"}
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^0.982"
