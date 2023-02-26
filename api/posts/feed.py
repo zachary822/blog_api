@@ -58,7 +58,7 @@ class Feed(BaseModel):
             E.description(
                 CDATA(markdown.markdown(post.body, extensions=["fenced_code"]))
             ),
-            E.pubDate(post.created.to_rfc822_string()),
+            E.pubDate(post.created.to_rfc2822_string()),
             E.guid(f"https://blog.thoughtbank.app/posts/{post.id}"),
         )
 
