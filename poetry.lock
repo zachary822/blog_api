@@ -23,18 +23,15 @@ trio = ["trio (>=0.16,<0.22)"]
 
 [[package]]
 name = "async-lru"
-version = "2.0.2"
-description = "Simple LRU cache for asyncio"
+version = "1.0.3"
+description = "Simple lru_cache for asyncio"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.6"
 files = [
-    {file = "async-lru-2.0.2.tar.gz", hash = "sha256:3b87ec4f2460c52cc7916a0138cc606b584c75d1ef7d661853c95d1d3acb869a"},
-    {file = "async_lru-2.0.2-py3-none-any.whl", hash = "sha256:d7c2b873e9af5c5a1f0a87a6c145e7e0b4eb92342b7235dda9dd5b10e950d6e2"},
+    {file = "async-lru-1.0.3.tar.gz", hash = "sha256:c2cb9b2915eb14e6cf3e717154b40f715bf90e596d73623677affd0d1fbcd32a"},
+    {file = "async_lru-1.0.3-py3-none-any.whl", hash = "sha256:ea692c303feb6211ff260d230dae1583636f13e05c9ae616eada77855b7f415c"},
 ]
-
-[package.dependencies]
-typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "attrs"
@@ -1213,4 +1210,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b464477d552a92ba54c8ef74dd44756b4eddc06d6e7f7b56d094e2dbdd4a0d5d"
+content-hash = "4ebbad751bc4997b36b362041e36c13c3ccc2688f92fa43c60f018510e5ed405"

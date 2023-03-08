@@ -15,7 +15,7 @@ motor = {extras = ["srv"], version = "^3.1.1"}
 pendulum = "^2.1.2"
 pyyaml = "^6.0"
 newrelic = "^8.4.0"
-async-lru = "^2.0.2"
+async-lru = "^1.0.3"
 lxml = "^4.9.1"
 markdown = "^3.4.1"
 strawberry-graphql = "^0.159.0"
