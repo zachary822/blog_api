@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cache
-from typing import Any, AsyncIterator, Optional
+from typing import Annotated, Any, AsyncIterator, Optional
 
 import pendulum
 from async_lru import alru_cache
@@ -45,6 +45,9 @@ async def get_db(client=Depends(get_client)) -> AsyncIterator[AsyncIOMotorDataba
     yield client.get_default_database()
 
 
+Db = Annotated[AsyncIOMotorDatabase, Depends(get_db)]
+
+
 async def get_session(
     client: AsyncIOMotorClient = Depends(get_client),
 ) -> AsyncIterator[AsyncIOMotorClientSession]:
@@ -52,7 +55,10 @@ async def get_session(
         yield s
 
 
-async def get_fs(db: AsyncIOMotorDatabase = Depends(get_db)):
+Session = Annotated[AsyncIOMotorClientSession, Depends(get_session)]
+
+
+async def get_fs(db: Db):
     return AsyncIOMotorGridFSBucket(db)
 
 

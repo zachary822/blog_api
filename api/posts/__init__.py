@@ -2,10 +2,9 @@ import datetime
 from dataclasses import asdict
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Response, status
-from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 from pydantic import constr
 
-from api.dependencies import CommonQueryParams, get_db, get_session
+from api.dependencies import CommonQueryParams, Db, Session
 from api.posts import crud
 from api.posts.feed import RSS_SCHEMA
 from api.responses import RSSResponse
@@ -18,8 +17,8 @@ router = APIRouter(tags=["posts"])
 
 @router.get("/", response_model=list[Post], response_model_by_alias=True)
 async def read_posts(
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
+    db: Db,
+    session: Session,
     commons: CommonQueryParams = Depends(),
 ):
     posts = [post async for post in crud.get_posts(db, session, **asdict(commons))]
@@ -35,9 +34,9 @@ async def read_posts(
 @router.get("/{object_id:oid}/", response_model=Post, response_model_by_alias=True)
 async def read_post(
     response: Response,
+    db: Db,
+    session: Session,
     object_id: ObjectId = Path(pattern=r"[0-9a-fA-F]{24}"),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
 ):
     post = await crud.get_post(db, session, object_id)
 
@@ -51,8 +50,8 @@ async def read_post(
 
 @router.get("/summary/", response_model=Summary)
 async def read_posts_summary(
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
+    db: Db,
+    session: Session,
 ):
     return await anext(crud.get_summary(db, session))
 
@@ -65,19 +64,17 @@ async def read_posts_summary(
     },
 )
 async def read_posts_feed(
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
+    db: Db,
+    session: Session,
 ):
     return RSSResponse(await crud.get_feed(db, session))
 
 
 @router.post("/suggestions/")
 async def suggest_title(
-    body: constr(strip_whitespace=True, min_length=1) = Body(  # type: ignore[valid-type]
-        ..., media_type="text/plain"
-    ),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
+    db: Db,
+    session: Session,
+    body: constr(strip_whitespace=True, min_length=1) = Body(..., media_type="text/plain"),  # type: ignore[valid-type]
 ):
     return [t["title"] async for t in crud.get_titles(db, session, body)]
 
@@ -85,8 +82,8 @@ async def suggest_title(
 @router.get("/tags/{tag}/", response_model=list[Post])
 async def read_tag_posts(
     tag: constr(strip_whitespace=True, min_length=1),  # type: ignore[valid-type]
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
+    db: Db,
+    session: Session,
 ):
     posts = [Post(**post) async for post in crud.get_tag_posts(db, session, tag)]
 
@@ -100,10 +97,10 @@ async def read_tag_posts(
     "/{year:int}/{month:int}/", response_model=list[Post], response_model_by_alias=True
 )
 async def read_month_posts(
+    db: Db,
+    session: Session,
     year: int = Path(..., ge=datetime.MINYEAR, le=datetime.MAXYEAR),
     month: int = Path(..., le=12, ge=1),
-    db: AsyncIOMotorDatabase = Depends(get_db),
-    session: AsyncIOMotorClientSession = Depends(get_session),
 ):
     """
     Get posts for each month
