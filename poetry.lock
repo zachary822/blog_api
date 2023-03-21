@@ -22,18 +22,6 @@ test = ["contextlib2", "coverage[toml] (>=4.5)", "hypothesis (>=4.0)", "mock (>=
 trio = ["trio (>=0.16,<0.22)"]
 
 [[package]]
-name = "async-lru"
-version = "1.0.3"
-description = "Simple lru_cache for asyncio"
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "async-lru-1.0.3.tar.gz", hash = "sha256:c2cb9b2915eb14e6cf3e717154b40f715bf90e596d73623677affd0d1fbcd32a"},
-    {file = "async_lru-1.0.3-py3-none-any.whl", hash = "sha256:ea692c303feb6211ff260d230dae1583636f13e05c9ae616eada77855b7f415c"},
-]
-
-[[package]]
 name = "attrs"
 version = "22.2.0"
 description = "Classes Without Boilerplate"
@@ -995,4 +983,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "5877f17ab7d99dc7bc6a7eab4a26f4952bdb3d6bc715d698d4e85f0856df2829"
+content-hash = "7688981636566313c8135760dc8de3f26b86461eae9743e3aae6851efe22e7e6"
