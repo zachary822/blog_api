@@ -4,7 +4,6 @@ from functools import cache
 from typing import Annotated, Any, AsyncIterator, Optional
 
 import pendulum
-from async_lru import alru_cache
 from bson.codec_options import TypeDecoder, TypeRegistry
 from fastapi import Depends, Query, Response
 from motor.motor_asyncio import (
@@ -30,10 +29,10 @@ def get_settings() -> Settings:
     return Settings()
 
 
-@alru_cache
-async def get_client(
+@cache
+def get_client(
     settings: Settings = Depends(get_settings),
-) -> AsyncIterator[AsyncIOMotorClient]:
+) -> AsyncIOMotorClient:
     return AsyncIOMotorClient(
         settings.MONGODB_URI,
         tz_aware=True,
@@ -41,7 +40,10 @@ async def get_client(
     )
 
 
-async def get_db(client=Depends(get_client)) -> AsyncIterator[AsyncIOMotorDatabase]:
+Client = Annotated[AsyncIOMotorClient, Depends(get_client)]
+
+
+async def get_db(client: Client) -> AsyncIterator[AsyncIOMotorDatabase]:
     yield client.get_default_database()
 
 
@@ -49,7 +51,7 @@ Db = Annotated[AsyncIOMotorDatabase, Depends(get_db)]
 
 
 async def get_session(
-    client: AsyncIOMotorClient = Depends(get_client),
+    client: Client,
 ) -> AsyncIterator[AsyncIOMotorClientSession]:
     async with await client.start_session() as s:
         yield s
