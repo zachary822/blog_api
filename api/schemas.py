@@ -18,6 +18,7 @@ class Post(Document):
     created: DateTime
     updated: DateTime
     image: Optional[AnyHttpUrl]
+    summary: Optional[str]
     body: str
     tags: list[str] = Field(default_factory=list)
 
