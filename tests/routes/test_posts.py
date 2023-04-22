@@ -14,6 +14,7 @@ class TestPosts:
             "image": "http://example.com/test.png",
             "body": "blah",
             "tags": [],
+            "summary": None,
         }
 
     def test_read_posts(self, client, mongodb_db, post):

@@ -34,8 +34,6 @@ def get_image_headers(out: AsyncIOMotorGridOut):
     return headers
 
 
-async def grid_iter(
-    out: AsyncIOMotorGridOut, chunk_size: int = 4096
-) -> AsyncIterator[bytes]:
+async def grid_iter(out: AsyncIOMotorGridOut, chunk_size: int = 4096) -> AsyncIterator[bytes]:
     while content := await out.read(chunk_size):
         yield content

@@ -1,13 +1,16 @@
 from enum import Enum
 
-from pydantic import BaseModel
+import strawberry
+
+from api.schemas import CustomBaseModel
 
 
+@strawberry.enum
 class Status(str, Enum):
     ok = "ok"
     bad = "bad"
 
 
-class Health(BaseModel):
+class Health(CustomBaseModel):
     status: Status
     mongo_version: str

@@ -24,9 +24,7 @@ async def read_posts(
     posts = [post async for post in crud.get_posts(db, session, **asdict(commons))]
 
     if not posts and commons.q:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="no posts returned by query"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="no posts returned by query")
 
     return posts
 
@@ -58,9 +56,7 @@ async def read_posts_summary(
 
 @router.get(
     "/feed/",
-    responses={
-        status.HTTP_200_OK: {"content": {"application/rss+xml": {"schema": RSS_SCHEMA}}}
-    },
+    responses={status.HTTP_200_OK: {"content": {"application/rss+xml": {"schema": RSS_SCHEMA}}}},
 )
 async def read_posts_feed(
     db: Db,

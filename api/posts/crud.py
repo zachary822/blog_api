@@ -1,3 +1,4 @@
+import re
 from typing import Any, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
@@ -5,6 +6,8 @@ from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 from api.posts.feed import Feed
 from api.schemas import Post
 from api.types import ObjectId
+
+ID_FIELD_REGEX = re.compile(r"^_?id$")
 
 
 def get_posts(
@@ -17,6 +20,7 @@ def get_posts(
 ):
     pipeline: list[dict[str, Any]] = [
         {"$match": {"published": True}},
+        {"$project": {"published": 0}},
     ]
 
     if q:
@@ -54,9 +58,7 @@ def get_titles(db: AsyncIOMotorDatabase, session: AsyncIOMotorClientSession, q: 
     )
 
 
-def get_post(
-    db: AsyncIOMotorDatabase, session: AsyncIOMotorClientSession, object_id: ObjectId
-):
+def get_post(db: AsyncIOMotorDatabase, session: AsyncIOMotorClientSession, object_id: ObjectId):
     return db.posts.find_one({"_id": object_id, "published": True}, session=session)
 
 

@@ -31,9 +31,7 @@ app.include_router(graphql_app.router, prefix="/graphql")
 
 @app.exception_handler(NoFile)
 def handle_gridfs_file_not_found(_request: Request, _exc: NoFile):
-    return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND, content={"detail": "image not found"}
-    )
+    return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "image not found"})
 
 
 @app.get(

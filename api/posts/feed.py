@@ -1,9 +1,8 @@
 import markdown
 from lxml.builder import ElementMaker
 from lxml.etree import CDATA
-from pydantic import BaseModel
 
-from api.schemas import Post
+from api.schemas import CustomBaseModel, Post
 
 RSS_SCHEMA = {
     "type": "object",
@@ -44,7 +43,7 @@ E = ElementMaker(nsmap=NSMAP)
 A = ElementMaker(namespace="http://www.w3.org/2005/Atom")
 
 
-class Feed(BaseModel):
+class Feed(CustomBaseModel):
     title: str
     link: str
     feed_link: str
@@ -55,9 +54,7 @@ class Feed(BaseModel):
     def create_item(post: Post):
         return E.item(
             E.title(post.title),
-            E.description(
-                CDATA(markdown.markdown(post.body, extensions=["fenced_code"]))
-            ),
+            E.description(CDATA(markdown.markdown(post.body, extensions=["fenced_code"]))),
             E.pubDate(post.created.to_rfc2822_string()),
             E.guid(f"https://blog.thoughtbank.app/posts/{post.id}"),
         )

@@ -1,12 +1,23 @@
 from typing import Optional
 
+import orjson
 from pendulum import DateTime
 from pydantic import AnyHttpUrl, BaseModel, Field
 
 from api.types import ObjectId
 
 
-class Document(BaseModel):
+def orjson_dumps(v, *, default):
+    return orjson.dumps(v, default=default).decode()
+
+
+class CustomBaseModel(BaseModel):
+    class Config:
+        json_loads = orjson.loads
+        json_dumps = orjson_dumps
+
+
+class Document(CustomBaseModel):
     id: ObjectId = Field(..., alias="_id")
 
     class Config:
@@ -23,17 +34,17 @@ class Post(Document):
     tags: list[str] = Field(default_factory=list)
 
 
-class MonthSummary(BaseModel):
+class MonthSummary(CustomBaseModel):
     year: int
     month: int
     count: int
 
 
-class TagSummary(BaseModel):
+class TagSummary(CustomBaseModel):
     name: str
     count: int
 
 
-class Summary(BaseModel):
+class Summary(CustomBaseModel):
     monthly: list[MonthSummary]
     tags: list[TagSummary]
