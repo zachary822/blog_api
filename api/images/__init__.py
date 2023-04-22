@@ -9,12 +9,12 @@ from api.types import ObjectId
 router = APIRouter(tags=["images"])
 
 
-@router.get("/{object_id}/", response_class=StreamingResponse)
+@router.get("/{object_id}/")
 async def get_image(
     object_id: ObjectId,
     fs: AsyncIOMotorGridFSBucket = Depends(get_fs),
     session: AsyncIOMotorClientSession = Depends(get_session),
-):
+) -> StreamingResponse:
     grid_out = await crud.get_image(fs, session, object_id)
     return StreamingResponse(
         crud.grid_iter(grid_out),
@@ -23,12 +23,12 @@ async def get_image(
     )
 
 
-@router.head("/{object_id}/", response_class=Response)
+@router.head("/{object_id}/")
 async def get_image_headers(
     object_id: ObjectId,
     fs: AsyncIOMotorGridFSBucket = Depends(get_fs),
     session: AsyncIOMotorClientSession = Depends(get_session),
-):
+) -> Response:
     grid_out = await crud.get_image(fs, session, object_id)
     return Response(
         media_type=grid_out.content_type,
