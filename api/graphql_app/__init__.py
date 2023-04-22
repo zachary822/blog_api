@@ -10,8 +10,8 @@ from api.graphql_app.schemas import Health, Post
 
 @strawberry.type
 class Query:
-    posts: list[Post] = strawberry.field(resolve_posts)
-    health: Health = strawberry.field(resolve_health)
+    posts: list[Post] = strawberry.field(resolver=resolve_posts)
+    health: Health = strawberry.field(resolver=resolve_health)
 
 
 schema = strawberry.Schema(Query)
@@ -39,4 +39,4 @@ class CustomGraphQLRouter(GraphQLRouter):
         return orjson.dumps(data).decode()
 
 
-router = GraphQLRouter(schema, context_getter=get_context)
+router = CustomGraphQLRouter(schema, context_getter=get_context)
