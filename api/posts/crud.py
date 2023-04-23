@@ -1,4 +1,3 @@
-import re
 from typing import Any, Optional
 
 from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
@@ -6,8 +5,6 @@ from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorDatabase
 from api.posts.feed import Feed
 from api.schemas import Post
 from api.types import ObjectId
-
-ID_FIELD_REGEX = re.compile(r"^_?id$")
 
 
 def get_posts(
