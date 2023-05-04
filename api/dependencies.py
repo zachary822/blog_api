@@ -5,7 +5,7 @@ from typing import Annotated, Any, AsyncIterator, Optional
 
 import pendulum
 from bson.codec_options import TypeDecoder, TypeRegistry
-from fastapi import Depends, Query, Response
+from fastapi import Depends, Header, Query, Response
 from motor.motor_asyncio import (
     AsyncIOMotorClient,
     AsyncIOMotorClientSession,
@@ -79,3 +79,17 @@ class CacheControl:
 
     async def __call__(self, response: Response) -> None:
         response.headers["Cache-Control"] = self.directives
+
+
+def get_if_none_match(if_none_match: Annotated[str | None, Header()] = None) -> str | None:
+    if if_none_match is not None:
+        return if_none_match.strip('"')
+
+    return if_none_match
+
+
+def get_modified_since(if_modified_since: Annotated[str | None, Header()] = None) -> pendulum.DateTime | None:
+    if if_modified_since is not None:
+        return pendulum.from_format(if_modified_since, "ddd, DD MMM YYYY HH:mm:ss z")
+
+    return if_modified_since
