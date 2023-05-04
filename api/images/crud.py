@@ -24,6 +24,7 @@ def get_image_headers(out: AsyncIOMotorGridOut):
     headers = {
         "Content-Length": str(out.length),
         "Last-Modified": to_rfc7231_format(last_modified),
+        "Cache-Control": "max-age=604800, must-revalidate",
     }
 
     try:
