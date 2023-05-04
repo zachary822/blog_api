@@ -15,6 +15,7 @@ from motor.motor_asyncio import (
 from pydantic import conint, constr
 
 from api.settings import Settings
+from api.utils import DirectiveMap
 
 
 class DatetimeDecoder(TypeDecoder):
@@ -73,14 +74,6 @@ class CommonQueryParams:
     offset: Optional[conint(ge=0)] = 0  # type: ignore[valid-type]
 
 
-class CacheControl:
-    def __init__(self, directives: str):
-        self.directives = directives
-
-    async def __call__(self, response: Response) -> None:
-        response.headers["Cache-Control"] = self.directives
-
-
 def get_if_none_match(if_none_match: Annotated[str | None, Header()] = None) -> str | None:
     if if_none_match is not None:
         return if_none_match.strip('"')
@@ -88,8 +81,36 @@ def get_if_none_match(if_none_match: Annotated[str | None, Header()] = None) -> 
     return if_none_match
 
 
-def get_modified_since(if_modified_since: Annotated[str | None, Header()] = None) -> pendulum.DateTime | None:
+def get_if_modified_since(if_modified_since: Annotated[str | None, Header()] = None) -> pendulum.DateTime | None:
     if if_modified_since is not None:
         return pendulum.from_format(if_modified_since, "ddd, DD MMM YYYY HH:mm:ss z")
 
     return if_modified_since
+
+
+class CacheControl:
+    def __init__(self, directives: str | None = None):
+        self.directives = directives
+
+    async def __call__(
+        self,
+        response: Response,
+        cache_control: Annotated[str | None, Header()] = None,
+        if_none_match: None | str = Depends(get_if_none_match),
+        if_modified_since: datetime | None = Depends(get_if_modified_since),
+    ):
+        if self.directives is not None:
+            # Does not work if returning custom responses
+            response.headers["Cache-Control"] = self.directives
+
+        def _is_not_modified(etag: str | None = None, modified_since: datetime | None = None) -> bool:
+            request_directives = DirectiveMap(cache_control)
+
+            if request_directives["no-cache"]:
+                return False
+
+            return if_none_match == etag or (
+                not (if_modified_since is None or modified_since is None) and modified_since > if_modified_since
+            )
+
+        yield _is_not_modified
