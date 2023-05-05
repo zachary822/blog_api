@@ -109,7 +109,7 @@ class CacheControl:
             if request_directives["no-cache"]:
                 return False
 
-            return if_none_match == etag or (
+            return (not (if_none_match is None or etag is None) and if_none_match == etag) or (
                 not (if_modified_since is None or modified_since is None) and modified_since > if_modified_since
             )
 
