@@ -17,7 +17,7 @@ pyyaml = "^6.0"
 newrelic = "^8.4.0"
 lxml = "^4.9.1"
 markdown = "^3.4.1"
-strawberry-graphql = "^0.176.3"
+strawberry-graphql = {extras = ["fastapi"], version = "^0.177.1"}
 orjson = "^3.8.10"
 
 [tool.poetry.group.dev.dependencies]
@@ -41,6 +41,10 @@ line-length = 120
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 
+[tool.isort]
+profile = "black"
+line_length = 120
+filter_files = true
 
 [build-system]
 requires = ["poetry-core"]
