@@ -8,7 +8,7 @@ packages = [{include = "api"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = "^0.95.0"
+fastapi = "^0.96.0"
 uvicorn = "^0.22.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.6"}
 motor = {extras = ["srv"], version = "^3.1.1"}
@@ -17,7 +17,7 @@ pyyaml = "^6.0"
 newrelic = "^8.4.0"
 lxml = "^4.9.1"
 markdown = "^3.4.1"
-strawberry-graphql = {extras = ["fastapi"], version = "^0.177.1"}
+strawberry-graphql = {extras = ["fastapi"], version = "^0.180.5"}
 orjson = "^3.8.10"
 
 [tool.poetry.group.dev.dependencies]
