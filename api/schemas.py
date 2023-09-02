@@ -1,35 +1,24 @@
 from typing import Optional
 
-import orjson
-from pendulum import DateTime
 from pydantic import AnyHttpUrl, BaseModel, Field
 
-from api.types import ObjectId
-
-
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
+from api.types import PydanticDateTime, PydanticObjectId
 
 
 class CustomBaseModel(BaseModel):
-    class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
+    ...
 
 
 class Document(CustomBaseModel):
-    id: ObjectId = Field(..., alias="_id")
-
-    class Config:
-        json_encoders = {ObjectId: str}
+    id: PydanticObjectId = Field(..., alias="_id")
 
 
 class Post(Document):
     title: str
-    created: DateTime
-    updated: DateTime
-    image: Optional[AnyHttpUrl]
-    summary: Optional[str]
+    created: PydanticDateTime
+    updated: PydanticDateTime
+    image: Optional[AnyHttpUrl] = None
+    summary: Optional[str] = None
     body: str
     tags: list[str] = Field(default_factory=list)
 

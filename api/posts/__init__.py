@@ -2,14 +2,15 @@ import datetime
 from dataclasses import asdict
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Response, status
-from pydantic import constr
+from pydantic import StringConstraints
+from typing_extensions import Annotated
 
 from api.dependencies import CommonQueryParams, Db, Session
 from api.posts import crud
 from api.posts.feed import RSS_SCHEMA
 from api.responses import RSSResponse
 from api.schemas import Post, Summary
-from api.types import ObjectId
+from api.types import PydanticObjectId
 from api.utils import to_rfc7231_format
 
 router = APIRouter(tags=["posts"])
@@ -34,7 +35,7 @@ async def read_post(
     response: Response,
     db: Db,
     session: Session,
-    object_id: ObjectId = Path(pattern=r"[0-9a-fA-F]{24}"),
+    object_id: PydanticObjectId,
 ) -> Post:
     post = await crud.get_post(db, session, object_id)
 
@@ -69,14 +70,14 @@ async def read_posts_feed(
 async def suggest_title(
     db: Db,
     session: Session,
-    body: constr(strip_whitespace=True, min_length=1) = Body(..., media_type="text/plain"),  # type: ignore[valid-type]
+    body: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] = Body(..., media_type="text/plain"),  # type: ignore[valid-type] # noqa: E501
 ) -> list[str]:
     return [t["title"] async for t in crud.get_titles(db, session, body)]
 
 
 @router.get("/tags/{tag}/")
 async def read_tag_posts(
-    tag: constr(strip_whitespace=True, min_length=1),  # type: ignore[valid-type]
+    tag: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)],  # type: ignore[valid-type]
     db: Db,
     session: Session,
 ) -> list[Post]:

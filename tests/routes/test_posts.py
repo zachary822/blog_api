@@ -9,8 +9,8 @@ class TestPosts:
         yield {
             "_id": "aaaaaaaaaaaaaaaaaaaaaaaa",
             "title": "blah",
-            "created": "2022-04-30T00:00:00+00:00",
-            "updated": "2022-04-30T00:00:00+00:00",
+            "created": "2022-04-30T00:00:00Z",
+            "updated": "2022-04-30T00:00:00Z",
             "image": "http://example.com/test.png",
             "body": "blah",
             "tags": [],

@@ -1,20 +1,16 @@
 from typing import AsyncIterator
 
 import pendulum
-from motor.motor_asyncio import (
-    AsyncIOMotorClientSession,
-    AsyncIOMotorGridFSBucket,
-    AsyncIOMotorGridOut,
-)
+from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorGridFSBucket, AsyncIOMotorGridOut
 
-from api.types import ObjectId
+from api.types import PydanticObjectId
 from api.utils import to_rfc7231_format
 
 
 def get_image(
     fs: AsyncIOMotorGridFSBucket,
     session: AsyncIOMotorClientSession,
-    object_id: ObjectId,
+    object_id: PydanticObjectId,
 ) -> AsyncIOMotorGridOut:
     return fs.open_download_stream(object_id, session=session)
 

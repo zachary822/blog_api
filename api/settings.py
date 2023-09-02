@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from api.types import MongoDsn
 
@@ -8,7 +8,4 @@ class Settings(BaseSettings):
     MONGODB_URI: MongoDsn
     ALLOW_ORIGINS: tuple[str] = ("*",)
     ALLOW_METHODS: tuple[str] = ("*",)
-
-    class Config:
-        env_file = ".env"
-        frozen = True
+    model_config = SettingsConfigDict(env_file=".env", frozen=True)

@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClientSession, AsyncIOMotorGridFSBuc
 
 from api.dependencies import CacheControl, get_fs, get_session
 from api.images import crud
-from api.types import ObjectId
+from api.types import PydanticObjectId
 
 router = APIRouter(tags=["images"])
 
@@ -14,7 +14,7 @@ cache_control = CacheControl()
 
 @router.get("/{object_id}/")
 async def get_image(
-    object_id: ObjectId,
+    object_id: PydanticObjectId,
     is_not_modified=Depends(cache_control),
     fs: AsyncIOMotorGridFSBucket = Depends(get_fs),
     session: AsyncIOMotorClientSession = Depends(get_session),

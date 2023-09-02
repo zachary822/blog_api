@@ -1,6 +1,5 @@
+from bson import ObjectId
 from starlette.convertors import Convertor, register_url_convertor
-
-from api.types import ObjectId
 
 
 class ObjectIdConverter(Convertor):

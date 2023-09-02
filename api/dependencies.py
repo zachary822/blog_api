@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cache
-from typing import Annotated, Any, AsyncIterator, Optional
+from typing import Any, AsyncIterator, Optional
 
 import pendulum
 from bson.codec_options import TypeDecoder, TypeRegistry
@@ -12,7 +12,8 @@ from motor.motor_asyncio import (
     AsyncIOMotorDatabase,
     AsyncIOMotorGridFSBucket,
 )
-from pydantic import conint, constr
+from pydantic import Field, StringConstraints
+from typing_extensions import Annotated
 
 from api.settings import Settings
 from api.utils import DirectiveMap
@@ -35,7 +36,7 @@ def get_client(
     settings: Settings = Depends(get_settings),
 ) -> AsyncIOMotorClient:
     return AsyncIOMotorClient(
-        settings.MONGODB_URI,
+        str(settings.MONGODB_URI),
         tz_aware=True,
         type_registry=TypeRegistry(type_codecs=[DatetimeDecoder()]),
     )
@@ -67,11 +68,11 @@ async def get_fs(db: Db):
 
 @dataclass
 class CommonQueryParams:
-    q: Optional[constr(strip_whitespace=True, min_length=1)] = Query(  # type: ignore[valid-type]
+    q: Optional[Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]] = Query(  # type: ignore[valid-type] # noqa: E501
         None, description="search post"
     )
-    limit: Optional[conint(le=100, ge=1)] = 10  # type: ignore[valid-type]
-    offset: Optional[conint(ge=0)] = 0  # type: ignore[valid-type]
+    limit: Optional[Annotated[int, Field(le=100, ge=1)]] = 10  # type: ignore[valid-type]
+    offset: Optional[Annotated[int, Field(ge=0)]] = 0  # type: ignore[valid-type]
 
 
 def get_if_none_match(if_none_match: Annotated[str | None, Header()] = None) -> str | None:
